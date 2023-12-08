@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-3">
+    <form method="post" action="{% url 'common:login' %}">
+        {% csrf_token %}
+        
+        <input type="hidden" name="next" value="{{ next }}">  <!-- 로그인 성공후 이동되는 URL -->
+        <!-- 주소창에 http://127.0.0.1:8000/common/login/?next=/pybo/answer/create/284 라고
+        나올거다 이때 next를 받아주는 역할을해준다.-->
+
+        {% include "form_errors.html" %}
+        <!-- templates에 있는 html파일들을 그냥 가져 올수 있다고? -->
+
+        <div class="mb-3">
+            <label for="u_name">사용자ID</label>
+            <input type="text" class="form-control" name="username" id="u_name"
+                   value="{{ form.username.value|default_if_none:'' }}">
+        </div>
+        <div class="mb-3">
+            <label for="passwd">비밀번호</label>
+            <input type="password" class="form-control" name="password" id="passwd"
+                   value="{{ form.password.value|default_if_none:'' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">로그인</button>
+    </form>
+</div>
+{% endblock %}
+
+<!-- [django.contrib.auth 인증시 다음 2개의 항목은 반드시 필요하다] 
+추측인데 아마 name으로 구분하지 않을까? -->

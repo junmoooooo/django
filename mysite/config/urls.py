@@ -1,0 +1,37 @@
+"""
+URL configuration for config project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/4.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path, include
+# from pybo import views
+# views안에 있는 함수들을 효율적으로 관리하기 위해
+from pybo.views import base_views
+
+#from pybo import views 너 대신에 위에 include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    #path('pybo/', views.index),
+    path('pybo/', include('pybo.urls')),
+    path('common/', include('common.urls')),
+    #로그인, 로그아웃을 위한 common을 등록
+    # path('', views.index, name='index'),  # '/' 에 해당되는 path
+    path('', base_views.index, name='index'), # '/' 에 해당되는 path
+]
+
+
+
+#시작

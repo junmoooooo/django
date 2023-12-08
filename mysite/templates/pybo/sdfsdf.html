@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h5 class="my-3 border-bottom pb-2">무엇이 궁금하신가요?</h5>
+    <form method="post">
+    <!-- <form method="post" action="{% url 'pybo:question_create' %}"> -->
+        {% csrf_token %}
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for field in form %}
+            {% if field.errors %}
+            <div>
+                <strong>{{ field.lable }}</strong>
+                {{ field.errors }}
+            </div>
+        {% endif %}
+        {% endfor %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="subject" class="from-label">제목</label>
+            <input type="text" class="form-control" name="subject" id="subject"
+            value="{{ form.subject.value | default_if_none: '' }}">
+        </div>
+        <dic class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea class="form-control" name="content"
+            id="content" rows="10" placeholder="상세내용을 입력해주세요">
+            {{ form.content.value | default_if_none: ''}}
+            </textarea>
+        </dic>
+        <button type="submit" class="btn btn-primary">저장하기</button>
+    </form>
+</div>
+{% endblock %}
+
+<!--form 태그에 action 속성을 지정하지 않으면 
+    호출한 대상한테 다시 보내준다.-->
+<!-- 동일한 템플릿을 여러 기능에서 함께 사용할 경우에는 
+    이처럼 form의 action 속성을 비워두는 트릭을 종종 사용한다.  -->
+
+<!-- {{ form.as_p }} 는 forms.py 에 있는 걸 사용할수 있음?-->

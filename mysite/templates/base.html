@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+    <!-- 한글로 만들어짐-->
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <!-- 표준언어 규약-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <!-- pybo CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <title>어지럽다 어지러워</title>
+</head>
+<body>
+<!-- 기본 템플릿 안에 삽입될 내용 Start -->
+<h1> 이건 기본입니다. </h1>
+
+<!-- 네비게이션바 -->
+{% include "navbar.html" %}
+
+
+{% block contents %}
+
+{% endblock %}
+
+
+{% block content %}
+<h1> 이건 추가된 텍스트 입니다.</h1>
+{% endblock %}
+<!-- 기본 템플릿 안에 삽입될 내용 End -->
+
+<!-- Bootstrap JS
+js는 기능이라고 보면 되나? -->
+<script src="{% static 'bootstrap.min.js' %}"></script>
+<!-- 자바스크립트 Start -->
+{% block script %}
+{% endblock %}
+<!-- 자바스크립트 End -->
+</body>
+</html>
+
+
+{% comment %} body 엘리먼트 안의 {% block content %} 와 {% endblock %} 템플릿 태그는 base.html을 
+상속한 템플릿에서 개별적으로 구현해야 하는 영역이 된다. {% endcomment %}

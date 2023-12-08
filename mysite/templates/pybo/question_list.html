@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+    <head>
+        {% extends 'base.html' %}
+        {% load pybo_filter %}
+        {% block contents %} 
+        <style>
+            a {
+                color : black;
+                text-decoration : none;
+                background-color: green;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container my-3">
+            <div class="row my-3">
+                <div class="col-6">
+                    <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문 등록하기</a>
+                </div>
+                <div class="col-6">
+                    <div class="input-group">
+                        <input type="text" id="search_kw" class="form-control" value="{{ kw|default_if_none:'' }}">
+                        <!-- 자바 스크립트에서 이 텍스트창에 입력된 값을 읽기 위해 다음처럼 id 속성을 추가한 점에 주목하자. -->
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table">
+
+                <thead>
+                    <tr class="text-center table-dark">
+                        <th>번호</th>
+                        <th style="width:50%">제목</th>
+                        <th>글쓴이</th>
+                        <th>작성일시</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if question_list %}              <!-- pybo/views.py에서 넘어온 question_list가 있다면-->
+                        <!-- subject, id, content, c_d-->
+                    {% for question in question_list %}
+                    <tr class="text-center">
+                        <!--<td>{{ forloop.counter }}</td> -->
+                        <!-- <li><a href="/pybo/{{ question.id }}/">{{ question.subject }}</a></li> --> 
+                        <td>
+                            <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 +1 -->
+                            {{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}
+                        </td>
+                        <td class="text-start">
+                            <!-- "text-start"는 왼족 정렬-->
+                            <a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a>
+                        <!-- question.subject가 표기됨 {{ 객체 }} -->
+                        <!-- question.id 는 질문 번호에 따라 넘어가는 질문이 달라짐-->
+                        <!-- 여기서 question.id는 URL 매핑에 정의된 <int:question_id>에 전달해야 하는 값을 의미한다-->
+                            {% if question.answer_set.count > 0 %}
+                            <span class="text-danger small mx-2">{{ question.answer_set.count }}</span>
+                            <!-- 답변 갯수 표시-->
+                            {% endif %}
+                        </td>
+                        <td>{{ question.author.username }}</td>  <!-- 글쓴이 추가 -->
+                        <td> {{ question.create_date }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colsan="4">질문이 없습니다.</td>
+                    </tr>
+                    
+                    {% endif %}
+                </tbody>
+            </table>
+            <!-- 페이징 시작-->
+            <ul class="pagination justify-content-center">
+
+                <!-- 이전페이지-->
+                {% if question_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" data-page="{{ question_list.previous_page_number }}"
+                        href="javascript:void(0)">이전</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+                </li>
+                {% endif%}
+
+                <!-- 페이지리스트 -->
+                {% for page_number in question_list.paginator.page_range %}
+
+                {% if page_number >= question_list.number|add:-5 and page_number <= question_list.number|add:5 %}
+                <!-- 여기서 사용한 |add:-5, |add:5 는 템플릿 필터이다. 
+                    |add:-5는 5만큼 빼라는 의미이고 |add:5는 5만큼 더하라는 의미이다.
+                위 코드는 페이지 리스트가 현재 페이지 기준으로 좌우 5개씩 보이도록 만든다.-->
+                {% if page_number == question_list.number %}
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" data-page="{{ page_number }}"
+                    href="javascript:void(0)">{{ page_number }}</a>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" data-page="{{ page_number }}"
+                    href="javascript:void(0)">{{ page_number }}</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+
+                <!--다음페이지-->
+                {% if question_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link" data-page="{{ question_list.next_page_number }}"
+                    href="javascript:void(0)">다음</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+                </li>
+                {% endif%}
+            </ul>
+            <!-- 페이징 처리 끝-->
+            {% comment %} <a href="{% url 'pybo:question_create'%}" class="btn btn-primary"> 질문 등록하기</a> {% endcomment %}
+            <!-- 상단으로 이동함 -->
+            <!-- 부트스트랩의 btn btn-primary 클래스를 적용하면 버튼으로 보인다.  -->
+            <!-- 이제 pybo:question_create 별칭에 해당되는 URL 매핑 규칙을 추가하자. -->
+        </div>
+        <form id="searchForm" method="get" action="{% url 'index' %}">
+            <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+            <input type="hidden" id="page" name="page" value="{{ page }}">
+        </form>
+        {% endblock %}
+        {% block script %}
+        <script type='text/javascript'>
+        const page_elements = document.getElementsByClassName("page-link");
+        Array.from(page_elements).forEach(function(element) {
+            element.addEventListener('click', function() {
+                document.getElementById('page').value = this.dataset.page;
+                document.getElementById('searchForm').submit();
+            });
+        });
+        const btn_search = document.getElementById("btn_search");
+        btn_search.addEventListener('click', function() {
+            document.getElementById('kw').value = document.getElementById('search_kw').value;
+            document.getElementById('page').value = 1;  // 검색버튼을 클릭할 경우 1페이지부터 조회한다.
+            document.getElementById('searchForm').submit();
+        });
+        </script>
+        {% endblock %}
+    </body>
+
+</html>
+
